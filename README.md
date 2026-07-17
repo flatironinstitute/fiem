@@ -38,6 +38,10 @@ path before the relevant exercise session.
   transforms, with MATLAB interfaces.
 - [FLAM](https://github.com/klho/FLAM) --- Fast Linear Algebra in MATLAB; used
   by exercises on interpolative decomposition and related compression methods.
+- [Chebfun](https://www.chebfun.org/) --- MATLAB software used by the AAA and
+  PSWF-based worksheets.
+- [ESP companion code](https://github.com/lu1and10/esp_spread) --- MATLAB
+  implementation of the PSWF Ewald split and its direct periodic reference.
 
 Individual worksheets state the package requirements specific to that exercise.
 
