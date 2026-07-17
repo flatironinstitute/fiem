@@ -1,0 +1,84 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+%
+\begin{tikzpicture}[scale=0.78]
+
+\begin{axis}[%
+%width=4.602in,
+%height=3.743in,
+%at={(0.772in,0.593in)},
+scale only axis,
+xmode=log,
+xmin=0.0003,
+xmax=0.06,
+xminorticks=true,
+xlabel style={font=\Large\color{white!15!black}},
+xlabel={$\Delta x$},
+xticklabel style = {font=\large},
+extra x ticks={0.02},
+extra x tick labels={},
+ymode=log,
+ymin=5e-08,
+ymax=0.05,
+yminorticks=true,
+ylabel style={font=\Large\color{white!15!black}},
+ylabel={Relative error},
+yticklabel style = {font=\large},
+axis background/.style={fill=white},
+xmajorgrids,
+xminorgrids,
+ymajorgrids,
+yminorgrids,
+legend style={font=\Large,at={(0.03,0.97)}, anchor=north west, legend cell align=left, align=left, draw=white!15!black},
+clip mode=individual,
+]
+\addplot [color=mycolor1, line width=1.0pt, mark=*, mark options={solid, mycolor1}, mark size=2.0pt]
+  table[row sep=crcr]{%
+1.799004e-02    0.01250345097681909018 \\
+1.347841e-02    0.00491529326273980761 \\
+9.012820e-03    0.00117955616735854348 \\
+4.515320e-03    0.00008279933320596541 \\
+1.805449e-03    0.00000352658691836311 \\
+1.354939e-03    0.00000327627689644966 \\
+9.028639e-04    0.00000330031562164421 \\
+};
+\addlegendentry{$e_{\infty}$}
+
+\addplot [color=mycolor2, dotted, line width=1.0pt, mark=o, mark options={solid, mycolor2}, mark size=2.0pt]
+  table[row sep=crcr]{%
+1.799004e-02    0.00172043698321140475 \\
+1.347841e-02    0.00057967463118638557 \\
+9.012820e-03    0.00015282391573044271 \\
+4.515320e-03    0.00001194629203476174 \\
+1.805449e-03    0.00000062295130191392 \\
+1.354939e-03    0.00000030787473736074 \\
+9.028639e-04    0.00000016852391512413 \\
+};
+\addlegendentry{$e_{2}$}
+
+\addplot [color=black, dashed, line width=1.0pt]
+  table[row sep=crcr]{%
+1.799004e-02    0.00172043698321140475 \\
+1.347841e-02    0.00072353352351329353 \\
+9.012820e-03    0.00021633398578146105 \\
+4.515320e-03    0.00002720247452895576 \\
+1.805449e-03    0.00000173899526160113 \\
+1.354939e-03    0.00000073502488929812 \\
+9.028639e-04    0.00000021747513067980 \\
+};
+\addlegendentry{$O(\Delta x ^{3})$}
+
+\end{axis}
+
+
+\end{tikzpicture}%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: ../poissongaussfryk.tex
+%%% End:

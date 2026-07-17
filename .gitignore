@@ -1,0 +1,87 @@
+# ---- LaTeX auxiliary files ----
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+
+# Intermediate documents
+*.dvi
+*.xdv
+*-converted-to.*
+
+# Bibliography
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+
+# Build tool / latexmk
+*.fdb_latexmk
+*.synctex
+*.synctex(busy)
+*.synctex.gz
+*.synctex.gz(busy)
+*.pdfsync
+
+# Auxiliary / package-generated
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ilg
+*.ind
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+*.brf
+*.thm
+*.loa
+*.nlo
+*.nls
+*.bak
+
+# ---- Fortran ----
+*.mod
+*.smod
+*.f90.o
+
+# ---- C / C++ object & compiled files ----
+*.o
+*.obj
+*.ko
+*.lo
+*.slo
+*.gch
+*.pch
+
+# Shared / static libraries
+*.so
+*.so.*
+*.dylib
+*.dll
+*.a
+*.la
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Private course material not distributed in the public repository
+/references/
+/exercises/hw2.tex
+/exercises/final.tex

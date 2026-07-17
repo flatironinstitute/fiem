@@ -1,0 +1,114 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+%
+\begin{tikzpicture}[scale=0.78]
+
+\begin{axis}[%
+%width=4.602in,
+%height=3.743in,
+%at={(0.772in,0.593in)},
+scale only axis,
+xmode=log,
+xmin=1e-6,
+xmax=0.003,
+xminorticks=true,
+xlabel style={font=\Large\color{white!15!black}},
+xlabel={$\delta$},
+extra x ticks={0.002},
+extra x tick labels={},
+xticklabel style = {font=\large},
+ymode=log,
+ymin=1e-08,
+ymax=0.003,
+yminorticks=true,
+ylabel style={font=\Large\color{white!15!black}},
+ylabel={Relative error},
+yticklabel style = {font=\large},
+axis background/.style={fill=white},
+xmajorgrids,
+xminorgrids,
+ymajorgrids,
+yminorgrids,
+legend style={font=\Large,at={(0.03,0.97)}, anchor=north west, legend cell align=left, align=left, draw=white!15!black},
+clip mode=individual,
+]
+%%%%%%%%%%%%%%%% non-degenerate %%%%%%%%%%%%%%%%
+\addplot [color=mycolor1, line width=1.0pt, mark=*, mark options={solid, mycolor1}, mark size=2.0pt]
+  table[row sep=crcr]{%
+     9.060379704474429e-04     5.751918073542443e-05\\
+     5.228085044004151e-04     2.837455721621307e-05\\
+     2.347745798855494e-04     9.370096943038349e-06\\
+     6.011487245790398e-05     1.583517743727053e-06\\
+     9.710857461079579e-06     8.639670272700639e-07\\
+     5.476650070427052e-06     8.177329070598145e-07\\
+     2.439060356200125e-06     1.074911344509009e-06\\
+};
+%\addlegendentry{$e_{\infty}$}
+
+\addplot [color=mycolor2, dotted, line width=1.0pt, mark=o, mark options={solid, mycolor2}, mark size=2.0pt]
+  table[row sep=crcr]{%
+     9.060379704474429e-04     1.056229717482648e-05\\
+     5.228085044004151e-04     4.308129059030584e-06\\
+     2.347745798855494e-04     1.289057084765961e-06\\
+     6.011487245790398e-05     4.727182728941369e-07\\
+     9.710857461079579e-06     9.871963679464511e-08\\
+     5.476650070427052e-06     9.626944932492544e-08\\
+     2.439060356200125e-06     9.465263375682426e-08\\
+};
+%\addlegendentry{$e_{2}$}
+%%%%%%%%%%%%%%%% degenerate %%%%%%%%%%%%%%%%
+\addplot [color=mycolor1, line width=1.0pt, mark=square*, mark options={solid, mycolor1}, mark size=2.0pt]
+  table[row sep=crcr]{%
+     9.060379704474449e-04     7.973889932925468e-05\\
+     5.228085044004164e-04     3.634742411910547e-05\\
+     2.347745798855498e-04     1.150546410135194e-05\\
+     6.011487245790397e-05     1.571959278818947e-06\\
+     9.710857461079581e-06     1.081793863973289e-06\\
+     5.476650070427052e-06     1.079304478629404e-06\\
+     2.439060356200125e-06     1.070292899523101e-06\\
+};
+%\addlegendentry{$e_{\infty}^{*}$}
+
+\addplot [color=mycolor2, dotted, line width=1.0pt, mark=square, mark options={solid, mycolor2}, mark size=2.0pt]
+  table[row sep=crcr]{%
+     9.060379704474449e-04     1.066619380494925e-05\\
+     5.228085044004164e-04     4.307149939723041e-06\\
+     2.347745798855498e-04     1.287671339463834e-06\\
+     6.011487245790397e-05     4.771734810266285e-07\\
+     9.710857461079581e-06     9.840691074091229e-08\\
+     5.476650070427052e-06     9.593914360271627e-08\\
+     2.439060356200125e-06     9.456357000868728e-08\\
+};
+%\addlegendentry{$e_{2}^{*}$}
+%%%%%%%%%%%% reference lines %%%%%%%%%%%%%%%%%
+
+\addplot [color=black, dashed, line width=1.0pt]
+  table[row sep=crcr]{%
+     9.060379704474450e-04     1.720452232222099e-04\\
+     5.228085044004167e-04     7.541139705766146e-05\\
+     2.347745798855497e-04     2.269340319540672e-05\\
+     6.011487245790398e-05     2.940328925231237e-06\\
+   };
+
+\addplot [color=black, dashed, line width=1.0pt]
+  table[row sep=crcr]{%
+     9.060379704474450e-04     1.720452232222099e-05\\
+     5.228085044004167e-04     7.541139705766145e-06\\
+     2.347745798855497e-04     2.269340319540672e-06\\
+%     6.011487245790398e-05     2.940328925231237e-07\\
+};
+%\addlegendentry{$O(\delta^{(3/2})$}
+\end{axis}
+
+
+\end{tikzpicture}%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: ../poissongaussfryk.tex
+%%% End:

@@ -1,0 +1,114 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+%
+\begin{tikzpicture}[scale=0.55]
+
+\begin{axis}[%
+%width=4.602in,
+%height=3.743in,
+%at={(0.772in,0.593in)},
+scale only axis,
+xmode=log,
+xmin=0.000001,
+xmax=0.003,
+xminorticks=true,
+xlabel style={font=\Large\color{white!15!black}},
+xlabel={$\delta$},
+xticklabel style = {font=\large},
+extra x ticks={0.002},
+extra x tick labels={},
+ymode=log,
+ymin=1e-09,
+ymax=1,
+yminorticks=true,
+ylabel style={font=\Large\color{white!15!black}},
+ylabel={Relative error},
+yticklabel style = {font=\large},
+axis background/.style={fill=white},
+xmajorgrids,
+xminorgrids,
+ymajorgrids,
+yminorgrids,
+legend style={font=\Large,at={(0.03,0.97)}, anchor=north west, legend cell align=left, align=left, draw=white!15!black},
+clip mode=individual,
+]
+%%%%%%%%%%%%%%%%%% delta^(4/2) %%%%%%%%%%%%%%%%%%
+\addplot [color=mycolor1, line width=1.0pt, mark=square*, mark options={solid, mycolor1}, mark size=2.0pt]
+  table[row sep=crcr]{%
+   0.000961644406940   0.052418548681328\\
+   0.000541436243713   0.022276932315192\\
+   0.000237951818000   0.005850522940774\\
+   0.000060815169185   0.000480222684418\\
+   0.000009763223090   0.000013409773430\\
+   0.000005494895537   0.000004304253251\\
+   0.000002443885747   0.000000857792870\\
+};
+%\addlegendentry{$e_{\infty}$}
+
+\addplot [color=mycolor2, dotted, line width=1.0pt, mark=square, mark options={solid, mycolor2}, mark size=2.0pt]
+  table[row sep=crcr]{%
+   0.000961644406940   0.011835289670045\\
+   0.000541436243713   0.005030375486929\\
+   0.000237951818000   0.001294998964960\\
+   0.000060815169185   0.000105142137848\\
+   0.000009763223090   0.000002917722176\\
+   0.000005494895537   0.000000930302648\\
+   0.000002443885747   0.000000184887199\\
+};
+%\addlegendentry{$e_{2}$}
+
+\addplot [color=black, dashed, line width=1.0pt]
+  table[row sep=crcr]{%
+%   0.000541436243713   0.095159793152161\\
+   0.000237951818000   0.018379635559094\\
+   0.000060815169185   0.001200556711046\\
+   0.000009763223090   0.000030941778108\\
+};
+%\addlegendentry{$O(\Delta x^{2})$}
+%%%%%%%%%%%%%%%%%% delta^(5/2) %%%%%%%%%%%%%%%%%%
+\addplot [color=mycolor1, line width=1.0pt, mark=*, mark options={solid, mycolor1}, mark size=2.0pt]
+  table[row sep=crcr]{%
+   0.000961644406940   0.080967361355944\\
+   0.000541436243713   0.019876793653893\\
+   0.000237951818000   0.002274445795928\\
+   0.000060815169185   0.000048753018903\\
+   0.000009763223090   0.000000331566570\\
+   0.000005494895537   0.000000088167434\\
+   0.000002443885747   0.000000028095591\\
+};
+%\addlegendentry{$e_{\infty}$}
+
+\addplot [color=mycolor2, dotted, line width=1.0pt, mark=o, mark options={solid, mycolor2}, mark size=2.0pt]
+  table[row sep=crcr]{%
+   0.000961644406940   0.017558435466307\\
+   0.000541436243713   0.004308001782118\\
+   0.000237951818000   0.000498894356057\\
+   0.000060815169185   0.000010624205802\\
+   0.000009763223090   0.000000056767682\\
+   0.000005494895537   0.000000015391968\\
+   0.000002443885747   0.000000003995063\\
+};
+%\addlegendentry{$e_{2}$}
+
+\addplot [color=black, dashdotdotted, line width=1.0pt]
+  table[row sep=crcr]{%
+%   0.000541436243713   0.00028825711389979\\
+   0.000237951818000   0.00003690917110281\\
+   0.000060815169185   0.00000121882547258\\
+   0.000009763223090   0.00000001258620371\\
+};
+%\addlegendentry{$O(\Delta x ^{3})$}
+\end{axis}
+
+
+\end{tikzpicture}%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: ../poissongaussfryk.tex
+%%% End:

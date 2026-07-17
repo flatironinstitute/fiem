@@ -1,0 +1,44 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\begin{tikzpicture}[scale=0.78]
+
+\begin{axis}[%
+%width=4.602in,
+%height=3.743in,
+%at={(0.772in,0.593in)},
+scale only axis,
+xmode=log,
+xmin=1000,
+xmax=10000000,
+xminorticks=true,
+xlabel style={font=\Large\color{white!15!black}},
+xlabel={$N$},
+xticklabel style = {font=\large},
+ymode=log,
+ymin=0.01,
+ymax=10,
+yminorticks=true,
+ylabel style={font=\Large\color{white!15!black}},
+ylabel={Time (sec)},
+yticklabel style = {font=\large},
+axis background/.style={fill=white},
+scaled ticks=true
+]
+\addplot [color=black, line width=1.0pt, mark=o, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+6852    0.02998300000000142518 \\
+12168    0.02721399999998652675 \\
+27684    0.04241200000001299486 \\
+108312    0.15037699999999176725 \\
+674664    0.52396400000000653563 \\
+1198728    0.87523499999998932708 \\
+2695248    1.99756799999999401507 \\
+};
+
+\end{axis}
+
+\end{tikzpicture}%
