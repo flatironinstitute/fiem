@@ -42,9 +42,6 @@ path before the relevant exercise session.
   PSWF-based worksheets.
 - [ESP companion code](https://github.com/lu1and10/esp_spread) --- MATLAB
   implementation of the PSWF Ewald split and its direct periodic reference.
-- [Function-extension reference code](https://github.com/sj90101/functionextension)
-  --- MATLAB implementation of the EFJ extension and the disk comparison with
-  AAA.
 
 Individual worksheets state the package requirements specific to that exercise.
 

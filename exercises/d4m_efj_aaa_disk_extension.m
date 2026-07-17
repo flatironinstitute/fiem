@@ -14,21 +14,15 @@
 % that every EFJ sample point lies inside the disk and that the two methods use
 % identical interior data and exterior targets.
 %
-% Required software and source code
-% ---------------------------------
+% Required software and mathematical sources
+% ------------------------------------------
 % 1. Chebfun, including its `aaa` function:
 %       https://www.chebfun.org/
 %
-% 2. EFJ reference code:
-%       https://github.com/sj90101/functionextension
-%    Read these files before coding:
+% 2. The Day 4 morning notes and the EFJ paper, for the extension formula,
+%    Chebyshev nodes, and Lagrange-basis weights.
 %
-%       code/comparisonwithaaa/testaaa2d.m
-%       code/comparisonwithaaa/testaaa2dPS.m
-%       code/normalextension/getoptimalnodesweights.m
-%       code/normalextension/globalfext2d_fast.m
-%
-% Reference:
+% References:
 %   C. L. Epstein, F. Fryklund, and S. Jiang, "An accurate and efficient
 %   scheme for function extension on smooth domains," SIAM Journal on
 %   Numerical Analysis 63(4) (2025), 1427--1453.
@@ -65,16 +59,19 @@
 
 %% 2. EFJ extension
 %
-% Use the eighth-order EFJ formula with the node parameter from the disk
-% comparison source:
+% Use the eighth-order EFJ formula with
 %
 %   n = 8;
 %   a = 2;
-%   [t,w] = getoptimalnodesweights(n,a);
 %
-% Here t_j are the shifted/scaled Chebyshev nodes in [0,a], and w_j are the
-% corresponding explicit extension weights.  Do not solve a Vandermonde
-% system numerically.
+% Compute the shifted/scaled Chebyshev nodes and the weights as in the Day 4
+% morning notes:
+%
+%   t_j = (a/2)*(1-cos(j*pi/n)),          j = 0,...,n,
+%   w_j = ell_j(-1),
+%
+% where ell_j is the Lagrange basis polynomial for the nodes {t_j}.  Do not
+% solve a Vandermonde system numerically.
 %
 % For an exterior target x = y(theta) + d*y(theta), with d = rho-1 > 0, use
 % the formula from the paper:
