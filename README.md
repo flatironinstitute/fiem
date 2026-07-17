@@ -19,6 +19,11 @@ scale, including:
 - Fast Multipole Method (FMM) and related hierarchical / fast direct solvers
 - Applications to Laplace, Helmholtz, and Stokes problems
 
+## Contributors
+
+- Shidong Jiang
+- Manas Rachh
+
 ## Building the notes
 
 LaTeX sources compile with a standard TeX distribution, e.g.:
