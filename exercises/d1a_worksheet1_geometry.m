@@ -258,5 +258,8 @@ quiver(cg)
 %% (Exercise 3) build a chunkgraph
 %
 % define your own chunkgraph with some straight and some curved sides 
-% plot it to make sure you're getting what you imagined. 
+% plot it to make sure you're getting what you imagined.
+%
+% For those who are brave, try including a smooth curve as a part of the chunkgraph.
+% See the documentation on how to include smooth curves in chunkgraph definitions.
 %
