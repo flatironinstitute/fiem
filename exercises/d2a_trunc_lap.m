@@ -80,6 +80,14 @@ err_interp = norm(fex-finterp);
 fprintf('error in interpolating an off-basis function=%d\n',err_interp);
 
 
+%% (Exercise 1) 
+% Repeat the same set of exercises but for the functions x^{\mu} for \mu \in [0.5, 40]
+% Note that you may need to use exp(mu \log(x)) using chebfun to get the test to work
+% What is the numerical rank of this family of functions? 
+%
+
+%% (Exercise 2)
+% Repeat the above exercise but for \mu \in [-0.5, 40]. What is the rank in this case?  
 
 
 
