@@ -148,9 +148,9 @@ This example gives a concrete route from PDE analysis to a numerical solver.
 \begin{column}{0.31\textwidth}
 \textbf{Analysis}
 
-Green's functions, boundary limits, Sobolev spaces.
+Green's functions, boundary limits, jump relations.
 
-Existence, uniqueness, compactness, jump relations.
+Well-posedness, uniqueness, Fredholm theory.
 \end{column}
 \begin{column}{0.31\textwidth}
 \textbf{Numerics}
@@ -197,13 +197,15 @@ remaining numerical task is to make that tradeoff practical.
 \small
 \begin{center}
 \renewcommand{\arraystretch}{1.18}
-\begin{tabular}{lll}
+\scriptsize
+\begin{tabular}{p{0.23\textwidth}p{0.38\textwidth}p{0.27\textwidth}}
 \toprule
 Task & Typical structure & Representative method \\
 \midrule
 Layer-potential matvec & kernel sums & FMM, DMK \\
-Periodic sums & convolution/translation invariance & Ewald, NUFFT \\
-Singular close evaluation & local analytic structure & RCIP, RRQ, QBX \\
+Periodic sums & real/Fourier splitting & Ewald with FFT/NUFFT \\
+Singular or close evaluation & local singular structure & product integration, QBX, RRQ \\
+Cornered boundaries & singular densities & RCIP \\
 Many right-hand sides & compressible dense inverse & fast direct solvers \\
 Time-dependent kernels & history and space-time structure & heat potentials \\
 Large simulations & memory and parallelism limits & HPC-aware kernels \\
@@ -224,7 +226,8 @@ A standard workflow for the model problem is:
 \begin{enumerate}
   \item Start from a standard elliptic BVP and identify natural boundary data.
   \item Write down the relevant Green's function and layer potentials.
-  \item Use jump relations to derive a boundary integral equation.
+  \item Take boundary limits, including jump terms when present, to obtain a
+  boundary integral equation.
   \item Predict which integrals need special quadrature.
   \item Recognize when a dense BIE matvec can be accelerated by low-rank or
   multilevel structure.
@@ -243,16 +246,14 @@ A standard workflow for the model problem is:
   \item Elliptic boundary value problems.
   \item Green's functions.
   \item Single and double layer potentials.
-  \item Jump relations and boundary operators.
-  \item Sobolev traces and mapping properties.
-  \item Reducing BVPs to BIEs.
+  \item Boundary integral equations and conditioning.
+  \item Panel discretization and on-surface singular quadrature.
 \end{itemize}
 \end{column}
 \begin{column}{0.48\textwidth}
 \textbf{After the break}
 \begin{itemize}
-  \item Smooth, singular, and nearly singular quadrature.
-  \item Nystr\"om and Galerkin discretizations.
+  \item Nearly singular evaluation and field evaluation.
   \item Dense linear algebra and GMRES.
   \item FMM, DMK, and fast direct solvers.
   \item HPC basics for fast integral codes.
@@ -418,61 +419,6 @@ conditioning can be very different.
 \end{frame}
 
 %================================================================
-\begin{frame}{Sobolev spaces by Fourier weights}
-\small
-Start with a smooth rapidly decaying function $v$ on $\R^m$.  Define
-\[
-  \|v\|_{H^s(\R^m)}^2
-  =
-  \int_{\R^m}
-  (1+|\xi|^2)^s\,|\widehat v(\xi)|^2\,\dd\xi .
-\]
-The Sobolev space $H^s(\R^m)$ is the completion in this norm.
-
-\begin{itemize}
-  \item $s=0$: $H^0=L^2$.
-  \item $s=k$ a nonnegative integer: this is equivalent to requiring weak
-  derivatives $\partial^\alpha v\in L^2$ for $|\alpha|\le k$.
-  \item Fractional $s$ measures non-integer smoothness by penalizing high
-  frequencies with the weight $(1+|\xi|^2)^s$.
-\end{itemize}
-
-\begin{block}{Domains and boundaries}
-For a smooth domain, $H^s(\Omega)$ is defined by restriction/extension from
-$\R^d$.  Boundary spaces $H^s(\Gamma)$ are defined after locally flattening
-$\Gamma$ to $\R^{d-1}$, so the derivatives are tangential.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Classical and weak formulations}
-\small
-Classically, for a Dirichlet problem we ask for
-\[
-u\in C^2(\Omega)\cap C(\overline{\Omega}),
-\qquad
--\Delta u(\x)=f(\x)\ \text{for }\x\in\Omega,
-\qquad
-u(\x)=g(\x)\ \text{for }\x\in\Gamma.
-\]
-If $u$ is smooth, the boundary condition is ordinary restriction to
-$\Gamma$. In the weak setting, one often asks for
-\[
-u\in H^1(\Omega),\qquad
-\int_\Omega \nabla u\cdot\nabla v\,\dd\x
-=
-\int_\Omega f v\,\dd\x
-\]
-for suitable test functions $v$. The boundary condition is then imposed by the
-trace of $u$, the rigorous boundary value of an $H^1$ function.
-
-\begin{block}{Why weak spaces matter here}
-Layer potentials produce traces and fluxes naturally in fractional Sobolev
-spaces, even when pointwise derivatives are not meaningful.
-\end{block}
-\end{frame}
-
-%================================================================
 \begin{frame}{Dimension reduction and dense matrices}
 \small
 A boundary integral formulation replaces volume unknowns by boundary unknowns:
@@ -512,34 +458,6 @@ Periodic/free space & Ewald/NUFFT/DMK or free-space FMM \\
 \bottomrule
 \end{tabular}
 \end{center}
-\end{frame}
-
-%================================================================
-\begin{frame}{Strong and weak boundary data}
-\small
-For smooth $u$, boundary data are pointwise:
-\[
-  u|_{\Gamma}=g,\qquad
-  \partial_{\nu}u=\nvec\cdot\nabla u|_{\Gamma}=q.
-\]
-In the weak setting, the trace operator $\gamma$ is the rigorous version of
-boundary restriction:
-\[
-  \gamma u=u|_\Gamma\quad\text{when }u\text{ is smooth}.
-\]
-For modern BIE theory, the natural data spaces are
-\[
-  \gamma:H^1(\Omega)\to H^{1/2}(\Gamma),
-\]
-and flux data live in
-\[
-  H^{-1/2}(\Gamma)=\left(H^{1/2}(\Gamma)\right)'.
-\]
-
-\begin{block}{Reference}
-This is the functional analytic setting of McLean,
-\emph{Strongly Elliptic Systems and Boundary Integral Equations}.
-\end{block}
 \end{frame}
 
 %================================================================
@@ -715,8 +633,8 @@ Green's second identity gives, for $\x\in\Omega$,
   \right]\dd s_{\y}.
 \]
 
-\begin{block}{Direct boundary integral formulation}
-The solution is determined by its Cauchy data
+\begin{block}{Boundary Cauchy data}
+The representation involves both boundary values
 \[
   \left(u|_\Gamma,\ \partial_\nu u|_\Gamma\right).
 \]
@@ -776,11 +694,10 @@ define the Newton volume potential
 \[
   \Vop[f](\x)=\int_{\Omega}G(\x,\y)f(\y)\dd\y.
 \]
-Then
+In the interior, in the distributional sense,
 \[
   -\Delta \Vop[f]=f
 \]
-away from boundary regularity issues.
 
 \begin{block}{Particular plus homogeneous}
 \[
@@ -798,8 +715,9 @@ For a Dirichlet problem, only $u|_\Gamma$ is known.
 For a Neumann problem, only $\partial_\nu u|_\Gamma$ is known.
 
 \begin{block}{Boundary integral equation}
-Use a representation with unknown density on $\Gamma$, take its boundary
-limit, and solve for the density so the prescribed boundary data are satisfied.
+Take the boundary limit of a layer representation or a Cauchy-data relation.
+The unknown can be an auxiliary layer density or the missing physical Cauchy
+data; impose the prescribed boundary condition to obtain the equation.
 \end{block}
 \end{frame}
 
@@ -859,7 +777,7 @@ G(\x,\y)=-\frac{1}{2\pi}\log|\x-\y|.
 For the double layer,
 \[
 \partial_{\nu(\y)}G(\x,\y)
-=-\frac{1}{2\pi}
+=\frac{1}{2\pi}
 \frac{(\x-\y)\cdot\nu(\y)}{|\x-\y|^2}.
 \]
 
@@ -871,51 +789,62 @@ singularity of some boundary operators.
 \end{frame}
 
 %================================================================
-\begin{frame}{Local origin of jump relations}
+\begin{frame}{Double-layer jump: local calculation in 2D}
 \small
-Consider approaching a smooth boundary point from the two sides.
-Near that point, replace the boundary locally by its tangent line or tangent
-plane. The most singular part of the kernel is then locally universal.
-
-\begin{block}{Local nature of the jump}
+Let $x_0=0\in\Gamma$, and assume that $\Gamma$ and $\mu$ are smooth near
+$x_0$.  Flatten the boundary locally as
 \[
-\left(\Dop[\mu]\right)^\pm\big|_\Gamma
-=
-\left(\pm\frac12 I+\Dop\right)\mu
+  \y(s)=(s,0),\qquad \Omega\text{ locally below the line},\qquad
+  \nu(\y)=(0,1).
 \]
-The principal value part $\Dop\mu$ depends on the whole boundary, but the
-$\pm\frac12\mu$ term comes from the local flat-boundary singularity.
-\end{block}
+For $\delta>0$, set
+\[
+  \x_\delta^-=(0,-\delta)\quad\text{(interior)},
+  \qquad
+  \x_\delta^+=(0,\delta)\quad\text{(exterior)}.
+\]
+Then
+\[
+  \partial_{\nu(\y)}G(\x_\delta^\pm,\y(s))
+  =\pm\frac{\delta}{2\pi(s^2+\delta^2)}.
+\]
+For a fixed local half-width $a>0$, replace $\mu(\y(s))$ by $\mu(x_0)$ in
+the singular part:
+\[
+  \frac{\pm\mu(x_0)}{2\pi}
+  \int_{-a}^{a}\frac{\delta}{s^2+\delta^2}\,\dd s
+  =\pm\frac{\mu(x_0)}{\pi}\arctan\!\frac{a}{\delta}
+  \longrightarrow \pm\frac12\mu(x_0).
+\]
 \end{frame}
 
 %================================================================
-\begin{frame}{Boundary traces}
+\begin{frame}{Double-layer jump relation}
 \small
-From now on, $\gamma^-$ denotes the interior boundary limit and $\gamma^+$
-denotes the exterior boundary limit. The normal $\nu$ points out of the
-bounded domain $\Omega$.
-
-Away from $\Gamma$, $\Sop[\sigma]$ and $\Dop[\mu]$ denote fields. On
-$\Gamma$, the same letters denote the boundary operators obtained from their
-traces:
+For a smooth boundary and density, let $\gamma^-$ and $\gamma^+$ denote the
+interior and exterior limits, with $\nu$ pointing out of $\Omega$.  Define the
+principal-value boundary operator
+by
 \[
-  \Sop\sigma=\gamma^\pm \Sop[\sigma],
-  \qquad
-  \Dop\mu=\text{principal-value trace part of }\Dop[\mu].
+  \Dop\mu(x_0)=\operatorname{p.v.}\int_\Gamma
+  \partial_{\nu(\y)}G(x_0,\y)\mu(\y)\,\dd s_{\y}.
 \]
-The jump relations are
+After subtracting the local tangent-line kernel, the remaining integral has
+the same limit from both sides.  Thus the intermediate limiting expression is
 \[
-  \gamma^\pm \Sop[\sigma]=\Sop\sigma,
+  \Dop[\mu](\x_\delta^\pm)
+  =\Dop\mu(x_0)
+  \pm\frac{\mu(x_0)}{\pi}\arctan\!\frac{a}{\delta}+o(1).
 \]
+Letting $\delta\downarrow0$ gives
 \[
-  \gamma^\pm \Dop[\mu]=
-  \left(\pm\frac12\Iop+\Dop\right)\mu.
+  \gamma^\pm\Dop[\mu]
+  =\left(\pm\frac12\Iop+\Dop\right)\mu.
 \]
 
 \begin{block}{Notation}
-The brackets in $\Sop[\sigma](\x)$ and $\Dop[\mu](\x)$ indicate field
-evaluation away from the boundary. Expressions such as $\Sop\sigma$ and
-$\Dop\mu$ denote boundary operators.
+$\Dop[\mu](\x)$ is a field away from $\Gamma$; $\Dop\mu$ is its
+principal-value boundary operator.
 \end{block}
 \end{frame}
 
@@ -928,11 +857,11 @@ The normal derivative of the single layer potential satisfies
   =
   \left(\mp\frac12\Iop+\Spop\right)\sigma.
 \]
-Define the hypersingular boundary operator by
+For a smooth boundary, the normal derivative of the double layer has matching
+one-sided limits.  Define the hypersingular boundary operator by
 \[
   \Dpop\mu=-\partial_\nu^\pm \Dop[\mu],
 \]
-the normal derivative of the double layer gives the hypersingular operator.
 
 \begin{center}
 \renewcommand{\arraystretch}{1.25}
@@ -973,119 +902,11 @@ quadrature.
 \end{frame}
 
 %================================================================
-\begin{frame}{The four classical boundary operators}
+\begin{frame}{Smooth and cornered boundaries}
 \small
-\[
-\begin{array}{rcll}
-\Sop &: H^{-1/2}(\Gamma) &\to& H^{1/2}(\Gamma),\\[0.25em]
-\Dop &: H^{1/2}(\Gamma) &\to& H^{1/2}(\Gamma),\\[0.25em]
-\Spop &: H^{-1/2}(\Gamma) &\to& H^{-1/2}(\Gamma),\\[0.25em]
-\Dpop &: H^{1/2}(\Gamma) &\to& H^{-1/2}(\Gamma).
-\end{array}
-\]
-
-\begin{block}{Standard Sobolev mapping properties}
-These mapping properties are the natural Sobolev-space form of layer potential
-theory for strongly elliptic systems.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Duality pairings on the boundary}
-\small
-The natural pairing between Neumann and Dirichlet data is
-\[
-\langle q,g\rangle_{\Gamma}
-\quad\text{with}\quad
-q\in H^{-1/2}(\Gamma),\quad g\in H^{1/2}(\Gamma).
-\]
-When both functions are smooth, this reduces to
-\[
-\langle q,g\rangle_\Gamma=\int_\Gamma q g\,\dd s.
-\]
-
-\begin{block}{Why this matters for BEM}
-Galerkin formulations test operators in the correct dual spaces. The Sobolev
-framework identifies the spaces in which the boundary operators are bounded
-and the variational formulation is well posed.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Interpretation of Sobolev trace indices}
-\small
-The trace operator $\gamma$ maps a volume function to its boundary value; for
-smooth functions, $\gamma u=u|_\Gamma$.
-
-Boundary values of $H^1(\Omega)$ functions have half a derivative:
-\[
-  u\in H^1(\Omega)\quad\Rightarrow\quad \gamma u\in H^{1/2}(\Gamma).
-\]
-Fluxes have half a derivative less:
-\[
-  \partial_\nu u\in H^{-1/2}(\Gamma).
-\]
-
-\begin{itemize}
-  \item Dirichlet data naturally live in $H^{1/2}(\Gamma)$.
-  \item Neumann data naturally live in $H^{-1/2}(\Gamma)$.
-  \item Layer densities must be chosen so the operators land in the data space.
-\end{itemize}
-\end{frame}
-
-%================================================================
-\begin{frame}{Why a boundary trace has half a derivative}
-\small
-Use the model domain $\R^d_+=\{(x',y):y>0\}$ and boundary data
-$g(x')=u(x',0)$.  For the harmonic extension,
-\[
-  \widehat u(\xi,y)=e^{-|\xi|y}\widehat g(\xi),
-\]
-where the Fourier transform is in the tangential variable $x'$.
-
-\[
-\begin{aligned}
-\int_{\R^d_+}|\nabla u|^2\,\dd x'\dd y
-&\simeq
-\int_{\R^{d-1}}\int_0^\infty
-|\xi|^2 e^{-2|\xi|y}|\widehat g(\xi)|^2\,\dd y\,\dd\xi\\
-&=
-C\int_{\R^{d-1}}|\xi|\,|\widehat g(\xi)|^2\,\dd\xi .
-\end{aligned}
-\]
-
-\begin{block}{Interpretation}
-One normal integration changes $|\xi|^2$ into $|\xi|$.  Thus the volume
-$H^1$ energy controls a boundary norm with one half tangential derivative:
-$g\in H^{1/2}(\partial\R^d_+)$.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Smooth boundary simplification}
-\small
-For a smooth closed curve or surface, we can first think classically:
-\[
-  \sigma,\mu\in C^\infty(\Gamma)
-  \quad\Rightarrow\quad
-  \Sop\sigma,\Dop\mu \text{ are smooth away from }\Gamma.
-\]
-Then the Sobolev theory tells us what survives for rougher data and nonsmooth
-boundaries.
-
-\begin{block}{Mathematical role of Sobolev spaces}
-The smooth formulas identify the operators; Sobolev mapping theory gives the
-spaces in which those operators are bounded and the boundary equations are
-well posed.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Smooth, Lipschitz, and cornered boundaries}
-\small
-For a smooth $\Gamma$, the operators have extra compactness and kernels can be
-expanded locally. For a Lipschitz boundary, traces and layer potentials remain
-well defined in Sobolev spaces, but pointwise intuition is less reliable.
+For a smooth $\Gamma$, local kernel expansions support standard high-order
+quadrature.  At corners and edges, the smooth-boundary assumptions no longer
+hold.
 
 \begin{itemize}
   \item Corners and edges create singular densities.
@@ -1170,7 +991,7 @@ Expanding the block matrix identity gives
 
 \begin{block}{Consequence}
 The four boundary operators are not independent.  These identities underlie
-Calder\'on preconditioning and many stable direct formulations.
+Calder\'on preconditioning.
 \end{block}
 \end{frame}
 
@@ -1206,28 +1027,19 @@ This is identity plus a compact/smoothing operator for smooth $\Gamma$:
 %================================================================
 \begin{frame}{Direct Dirichlet formulation}
 \small
-Green's representation for a harmonic interior solution is
-\[
-u=\Sop[q]-\Dop[g],
-\qquad
-g=\gamma^-u,\quad q=\partial_\nu^-u.
-\]
-If $g$ is prescribed, the unknown physical data are
+For prescribed Dirichlet data $g=\gamma^-u$, take the physical flux
 \[
 q=\partial_\nu^-u.
 \]
-Taking the interior trace gives
-\[
-g=\Sop q-\left(-\frac12 I+\Dop\right)g.
-\]
-Thus
+The boundary Cauchy relation is
 \[
 \Sop q=\left(\frac12 I+\Dop\right)g.
 \]
 
 \begin{block}{Observation}
-This equation solves for the Neumann trace directly, but it is first kind in
-$q$.
+This equation solves directly for the Neumann trace, but it is first kind in
+$q$.  Green's representation is one standard derivation of this relation;
+the direct character comes from using the physical flux as the unknown.
 \end{block}
 \end{frame}
 
@@ -1260,17 +1072,12 @@ $\Gamma$.
 %================================================================
 \begin{frame}{Direct Neumann formulation}
 \small
-Again use
-\[
-u=\Sop[q]-\Dop[g],
-\qquad
-g=\gamma^-u,\quad q=\partial_\nu^-u.
-\]
-If $q$ is prescribed, the unknown physical data are
+If the Neumann data $q=\partial_\nu^-u$ are prescribed, the missing physical
+boundary data are
 \[
 g=\gamma^-u.
 \]
-Taking the interior normal derivative gives
+The boundary Cauchy relation gives
 \[
 q=
 \left(\frac12 I+\Spop\right)q+\Dpop g,
@@ -1344,11 +1151,13 @@ representation is chosen carefully.
 \begin{frame}{Exterior Dirichlet problem}
 \small
 For an exterior Laplace or Helmholtz problem, the physical domain is unbounded.
-A volume discretization needs an artificial far boundary or absorbing layer.
+A volume discretization often introduces an artificial far boundary or an
+absorbing treatment.
 
 \begin{block}{Integral equation advantage}
-Use a free-space Green's function and a layer potential on the obstacle boundary.
-The far-field or radiation condition is built into the kernel.
+Use a free-space Green's function and a layer potential on the obstacle
+boundary.  With an appropriate outgoing Green's function, the representation
+satisfies the required condition at infinity.
 \end{block}
 
 For Helmholtz,
@@ -1407,8 +1216,6 @@ Use layer potentials on the shared interface, take traces from both sides,
 and solve a coupled system for interface densities or Cauchy data.
 \end{block}
 
-This is the template behind many multi-material scattering and Stokes/elastic
-interface solvers.
 \end{frame}
 
 %================================================================
@@ -1427,60 +1234,43 @@ interface solvers.
 \begin{column}{0.48\textwidth}
 \textbf{Direct}
 \begin{itemize}
-  \item Use Green's representation formula.
-  \item Unknown is missing Cauchy data.
-  \item Density often has physical meaning.
-  \item Natural for coupled boundary conditions.
+  \item Unknown is missing physical Cauchy data.
+  \item Unknown has physical meaning.
+  \item Boundary relations connect traces and fluxes.
 \end{itemize}
 \end{column}
 \end{columns}
 
 \begin{block}{Practical rule}
-Choose the representation that gives a well-conditioned, uniquely solvable
-equation in the right function spaces.
+Choose a representation that is uniquely solvable and can be discretized
+accurately for the problem at hand.
 \end{block}
 \end{frame}
 
 %================================================================
 \begin{frame}{First kind versus second kind}
 \small
-First-kind equation:
+For a smooth boundary, common model forms are
 \[
-  K\sigma=g.
+\text{first kind:}\qquad
+K\sigma=g,
 \]
-Second-kind equation:
 \[
-  \left(\alpha I+K\right)\sigma=g,\qquad \alpha\ne0.
+\text{second kind:}\qquad
+\left(\alpha I+K\right)\sigma=g,\qquad \alpha\ne0,
 \]
+where the second-kind remainder $K$ is compact.
 
 \begin{itemize}
-  \item Compact $K$ alone has singular values accumulating at zero.
-  \item $\alpha I+K$ has spectrum clustered near $\alpha$.
-  \item Second-kind equations are usually much better conditioned after
-  discretization.
+  \item A compact first-kind operator has singular values accumulating at zero.
+  \item An invertible operator of the form $\alpha I+K$ has spectrum clustered
+  near $\alpha$, apart from isolated eigenvalues.
 \end{itemize}
 
 \begin{block}{Formulation preference}
-When possible, formulate second-kind BIEs and use fast algorithms for the
-dense matrix operations.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Spectrum of a second-kind discretization}
-\small
-For a compact perturbation of the identity,
-\[
-B=\alpha I+K,\qquad K\ \text{compact},
-\]
-the spectrum of $B$ clusters near $\alpha$ except for isolated eigenvalues.
-After a stable discretization, the matrix eigenvalues often show the same
-clustering.
-
-\begin{block}{GMRES implication}
-When the spectrum is clustered and the operator is not badly nonnormal,
-GMRES can converge in a number of iterations that is nearly independent of
-$N$.
+When available, a second-kind formulation is often preferable for iterative
+solution.  This does not remove the need to check uniqueness, discretization,
+and preconditioning.
 \end{block}
 \end{frame}
 
@@ -1498,7 +1288,7 @@ exactly one of the following happens:
   the inhomogeneous equation requires compatibility with the adjoint nullspace.
 \end{itemize}
 
-\begin{block}{Kress viewpoint}
+\begin{block}{Consequence for integral equations}
 This is why compact-operator theory is central to classical integral equations.
 \end{block}
 \end{frame}
@@ -1522,30 +1312,10 @@ constant, and its data must satisfy a flux compatibility condition.
 \end{frame}
 
 %================================================================
-\begin{frame}{Stable first-kind formulations}
-\small
-First-kind equations can be the natural formulation when:
-\begin{itemize}
-  \item solving for physical Cauchy data;
-  \item using coercive variational formulations;
-  \item coupling to finite elements or domain decomposition;
-  \item building Calder\'on preconditioners.
-\end{itemize}
-
-\begin{block}{Practical distinction}
-The issue is not the label ``first kind'' alone. The issue is whether the
-continuous operator, discretization, and preconditioner produce a stable
-finite-dimensional problem.
-\end{block}
-\end{frame}
-
-%================================================================
 \begin{frame}{Common solver failure modes}
 \small
 \begin{itemize}
   \item Nonunique representation: resonances or nullspaces are not removed.
-  \item Incompatible function space: the data or density are outside the
-  bounded mapping range of the operator.
   \item Inaccurate singular quadrature: the discretization no longer matches
   the intended operator.
   \item Unaccelerated linear algebra: a dense matrix costs $\cO(N^2)$ per
@@ -1559,13 +1329,6 @@ Identify these failure modes before studying specialized algorithms.
 \end{block}
 \end{frame}
 
-%================================================================
-\begin{frame}{Break}
-\centering
-\Large 10 minute break
-\end{frame}
-
-%================================================================
 \section{Discretization}
 
 \begin{frame}{From operator equation to linear system}
@@ -1596,7 +1359,7 @@ For a smooth curve in 2D, split
   \Gamma=\bigcup_{\ell=1}^{N_{\rm pan}}\Gamma_\ell,\qquad
   \Gamma_\ell=\{\x_\ell(t): -1\le t\le1\}.
 \]
-On each panel, use $q$ Gauss or Chebyshev nodes:
+On each panel, use $p$ Gauss or Chebyshev nodes:
 \[
   \x_{\ell,j}=\x_\ell(t_j),\qquad
   w_{\ell,j}=w_j|\x_\ell'(t_j)|.
@@ -1720,27 +1483,6 @@ For smooth panel integrands, Gaussian rules converge rapidly.
 \end{frame}
 
 %================================================================
-\begin{frame}{Quadrature error model}
-\small
-For a $q$-point panel rule on a panel of size $h$,
-\[
-\text{error}\approx C(\x)\,h^{q}
-\]
-is a standard local model for smooth integrands.
-The constant $C(\x)$ grows when the target approaches the panel because
-derivatives of the kernel grow:
-\[
-\partial_t^m K(\x,\x_\ell(t))
-\sim \dist(\x,\Gamma_\ell)^{-m-\alpha}.
-\]
-
-\begin{block}{Reason close evaluation is delicate}
-The kernel is still smooth off the boundary, but it is not smooth on the
-scale resolved by the panel.
-\end{block}
-\end{frame}
-
-%================================================================
 \begin{frame}{Singular quadrature as part of the method}
 \small
 When the target lies on the source panel,
@@ -1795,14 +1537,14 @@ often has the split
 \]
 where $K_1,K_2$ are smooth.
 
-\begin{block}{Kress product integration}
+\begin{block}{Periodic product integration}
 Integrate the logarithmic part with special weights and the smooth part with
 the periodic trapezoidal rule.
 \end{block}
 \end{frame}
 
 %================================================================
-\begin{frame}{Kress weights for logarithmic kernels}
+\begin{frame}{Logarithmic weights for periodic kernels}
 \small
 For periodic logarithmic kernels,
 \[
@@ -1810,8 +1552,8 @@ For periodic logarithmic kernels,
 =
 -2\sum_{m=1}^{\infty}\frac{\cos m(t-\tau)}{m}.
 \]
-This Fourier series gives spectrally accurate product-integration weights for
-the logarithmic part.
+For analytic periodic coefficients and densities, this construction gives
+spectrally accurate product integration for the logarithmic part.
 
 \begin{block}{Why this is powerful}
 The singular factor is universal; the smooth coefficient and density are
@@ -1840,41 +1582,36 @@ unknown density is represented by nodal values.
 %================================================================
 \begin{frame}{Hypersingular regularization}
 \small
-Hypersingular kernels often require integration by parts or analytic
-regularization. A typical schematic form is
-\[
-\Dpop\mu
-\sim
-\frac{d}{ds}\Sop\frac{d\mu}{ds}
-+\text{lower-order terms}
-\]
-for smooth 2D Laplace problems.
+Hypersingular boundary operators are not ordinary integrals.  Before
+discretization, use a regularized formulation supported by the analysis of
+the specific operator, for example through integration by parts or a weak
+formulation.
 
 \begin{block}{Discretization principle}
-The mathematically correct weak or regularized form should be discretized;
-direct finite differencing of a singular kernel is usually unstable.
+Discretize the regularized operator, not a pointwise finite-difference
+approximation of the singular kernel.
 \end{block}
 \end{frame}
 
 %================================================================
 \begin{frame}{Alpert and generalized Gaussian rules}
 \small
-Another approach is to use quadrature nodes and weights adapted to the
-singularity:
-\[
-  u(t)=\int_a^b \log|t-s|\,f(s)\dd s
-  \approx
-  \sum_j w_j^{(t)}\log|t-s_j^{(t)}|\,f(s_j^{(t)}).
-\]
-Here $t$ is the target point, and the quadrature source nodes $s_j^{(t)}$
-and weights $w_j^{(t)}$ depend on $t$.
+Another approach is to construct quadrature rules adapted to a prescribed
+singular kernel family.
 
 \begin{itemize}
-  \item Alpert rules handle endpoint and interior singularities.
-  \item Generalized Gaussian quadrature integrates prescribed singular
-  function spaces.
+  \item Alpert hybrid Gauss--trapezoidal rules correct logarithmic and other
+  weak singularities locally.
+  \item Generalized Gaussian quadrature chooses nodes and weights to be
+  accurate for a prescribed family of functions.
   \item These quadrature mechanisms return on Day 2.
 \end{itemize}
+\end{frame}
+
+%================================================================
+\begin{frame}{Break}
+\centering
+\Large 10 minute break
 \end{frame}
 
 %================================================================
@@ -1934,97 +1671,27 @@ Common tools for near-boundary layer potential evaluation:
   \item recursive reduction quadrature in 3D.
 \end{itemize}
 
-\begin{block}{Design criterion}
-The method must recover high-order accuracy without turning every close target
-into an expensive special case.
+\begin{block}{Method choice}
+The appropriate correction depends on the kernel, geometry, target distance,
+and desired accuracy.
 \end{block}
 \end{frame}
 
 %================================================================
-\begin{frame}{Quadrature error budget}
+\begin{frame}{Sources of quadrature error}
 \small
-The total numerical error usually has several parts:
-\[
-\begin{aligned}
-\|u-u_N\|
-\lesssim{}&
-\underbrace{\text{geometry error}}_{\Gamma\text{ approximation}}
-+
-\underbrace{\text{density error}}_{\sigma-\sigma_N}\\
-&+
-\underbrace{\text{singular quadrature error}}_{\text{on-surface}}
-+
-\underbrace{\text{close evaluation error}}_{\text{off-surface}}.
-\end{aligned}
-\]
+For a computed layer potential, distinguish
+\begin{itemize}
+  \item geometry approximation error;
+  \item density-solve error;
+  \item on-surface singular-quadrature error;
+  \item off-surface close-evaluation error.
+\end{itemize}
 
 \begin{block}{Why diagnostics matter}
 Increasing $N$ may not help if the dominant error is geometry, close
 evaluation, or an inaccurate singular quadrature correction.
 \end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Galerkin boundary element method}
-\small
-Galerkin BEM chooses a finite-dimensional space $X_N\subset H^{s}(\Gamma)$
-and solves
-\[
-  \langle A\sigma_N,\tau_N\rangle
-  =
-  \langle g,\tau_N\rangle
-  \qquad \forall \tau_N\in X_N.
-\]
-
-\begin{itemize}
-  \item Natural for Sobolev-space weak formulations.
-  \item Produces variational stability estimates.
-  \item Requires double integrals over pairs of panels.
-  \item Common in engineering BEM.
-\end{itemize}
-\end{frame}
-
-%================================================================
-\begin{frame}{Nystr\"om versus Galerkin}
-\small
-\begin{center}
-\renewcommand{\arraystretch}{1.25}
-\begin{tabular}{lll}
-\toprule
-Method & Discretization idea & Main numerical issue \\
-\midrule
-Nystr\"om & quadrature of the operator; nodal values & singular quadrature design \\
-Galerkin & test residual against basis functions & double integration and assembly \\
-Collocation & enforce residual at selected points & stability and quadrature choice \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\begin{block}{Emphasis in this course}
-We mostly use high-order Nystr\"om methods, because they couple naturally to
-FMM-style fast matrix-vector products.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Conditioning after discretization}
-\small
-For a second-kind equation
-\[
-  \left(\alpha I+K\right)\sigma=g,
-\]
-the discrete system usually has
-\[
-  \kappa(A_N)=\cO(1)
-\]
-as $N$ increases, if the continuous operator is invertible and the
-discretization is stable.
-
-For a first-kind equation
-\[
-  \Sop\sigma=g,
-\]
-the condition number often grows because $\Sop$ is compact/smoothing.
 \end{frame}
 
 %================================================================
@@ -2123,12 +1790,9 @@ An algorithm is fast if its complexity is linear or nearly linear:
 \]
 
 \begin{block}{Precision dependence}
-For kernel methods, constants usually depend on the requested accuracy
-$\eps$:
-\[
-  p\sim \log^a(1/\eps)
-\]
-for expansion order or rank.
+For kernel methods, constants depend on the requested accuracy $\eps$ through
+the expansion order, numerical rank, or stencil width.  The dependence is
+method- and kernel-specific.
 \end{block}
 \end{frame}
 
@@ -2172,366 +1836,6 @@ After quadrature, layer potential evaluation has the form
 \end{itemize}
 \end{frame}
 
-% The former FMM-only survey block is retained below as source history while
-% the replacement synthesis is presented in the following frames.
-\iffalse
-%================================================================
-\begin{frame}{Low rank for separated sets}
-\small
-Let $B_S$ be a source box and $B_T$ a target box.
-If they are well separated, the interaction matrix
-\[
-  A(B_T,B_S)=\{K(\x_i,\y_j):\x_i\in B_T,\ \y_j\in B_S\}
-\]
-has small numerical rank:
-\[
-  A(B_T,B_S)\approx U V^T,\qquad \rank(UV^T)=p\ll N.
-\]
-
-\begin{block}{Low-rank principle}
-Far-field interactions contain less information than their dense matrix size
-suggests.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Separated-kernel low-rank analogy}
-\small
-For separated variables, a kernel may be approximated by a short separated
-sum:
-\[
-K(x,y)\approx \sum_{\ell=1}^{p}a_\ell(x)b_\ell(y).
-\]
-Then
-\[
-\sum_{j=1}^{n}K(x_i,y_j)q_j
-\approx
-\sum_{\ell=1}^{p}a_\ell(x_i)
-\left(\sum_{j=1}^{n}b_\ell(y_j)q_j\right).
-\]
-
-\begin{block}{Cost reduction}
-The direct cost $mn$ becomes roughly $p(m+n)$ for a block of $m$ targets and
-$n$ sources.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Well-separated boxes}
-\small
-\begin{center}
-\includegraphics[height=0.62\textheight]{well_separation.png}
-\end{center}
-\vspace{-0.5em}
-\begin{center}
-\footnotesize Separated source and target boxes from the fast-algorithm source slides.
-\end{center}
-\end{frame}
-
-%================================================================
-\begin{frame}{Separation controls rank}
-\small
-For analytic kernels away from the singularity, the numerical rank of a block
-is controlled by geometry:
-\[
-\rank_\eps A(B_T,B_S)
-\approx
-\text{function of }
-\frac{\operatorname{diam}(B_T)+\operatorname{diam}(B_S)}
-{\dist(B_T,B_S)}
-\text{ and }\eps.
-\]
-
-\begin{block}{Why trees are natural}
-Refining boxes until near interactions are local gives many far blocks with
-bounded rank.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Multipole expansion example}
-\small
-For the 3D Laplace kernel, when $r_</r_><1$,
-\[
-\frac{1}{|\x-\y|}
-=
-4\pi\sum_{\ell=0}^{p}\sum_{m=-\ell}^{\ell}
-\frac{1}{2\ell+1}
-\frac{r_<^\ell}{r_>^{\ell+1}}
-Y_{\ell m}(\widehat r_<)
-\overline{Y_{\ell m}(\widehat r_>)}+E_p.
-\]
-
-\begin{block}{Rank count}
-The truncated expansion has about $(p+1)^2$ basis functions in 3D.
-The order $p$ depends on tolerance and separation ratio, not on the number
-of particles in the boxes.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Adaptive tree}
-\small
-\begin{center}
-\includegraphics[height=0.62\textheight]{adaptivetree.png}
-\end{center}
-\vspace{-0.4em}
-\begin{center}
-\footnotesize Adaptive tree structure used to organize nonuniform sources.
-\end{center}
-\end{frame}
-
-%================================================================
-\begin{frame}{Meaning of the FMM translations}
-\small
-Let $B$ be a source box, $C$ a target box, and let $c_B,c_C$ denote
-their centers.  For a well-separated pair, the source contribution is
-smooth in the target box:
-\[
-\begin{aligned}
-  u_B(\x)=\sum_{\y_j\in B}K(\x,\y_j)q_j,\qquad \x\in C,
-  \qquad
-  u_B(\x)\approx\sum_{\nu=1}^{p}L_{C,\nu}\phi_\nu(\x-c_C).
-\end{aligned}
-\]
-
-\vspace{-0.4em}
-\begin{columns}[T,totalwidth=\textwidth]
-\begin{column}{0.48\textwidth}
-\textbf{Upward pass}
-\begin{itemize}
-  \item $S2M$: compress sources in a leaf into multipole coefficients
-  $\bm M_B$.
-  \item $M2M$: shift child multipoles to a parent center.
-\end{itemize}
-
-\vspace{1mm}
-\textbf{Interaction pass}
-\begin{itemize}
-  \item $M2L$: convert a well-separated source multipole $\bm M_B$ into
-  target local coefficients $\bm L_C$.
-\end{itemize}
-\end{column}
-\begin{column}{0.48\textwidth}
-\textbf{Downward pass}
-\begin{itemize}
-  \item $L2L$: shift a parent local expansion to a child center.
-  \item $L2T$: evaluate the local expansion at target nodes.
-\end{itemize}
-
-\vspace{1mm}
-\textbf{Near field}
-
-Adjacent boxes are excluded from $M2L$ and evaluated directly, or by the
-singular and near-singular quadrature rules used in the BIE discretization.
-\end{column}
-\end{columns}
-\end{frame}
-
-%================================================================
-\begin{frame}{Ordering of an FMM matvec}
-\small
-\begin{center}
-\begin{tikzpicture}[
-  >=Latex,
-  node distance=0.85cm and 0.95cm,
-  every node/.style={font=\scriptsize},
-  fmmstep/.style={draw,thick,align=center,minimum width=2.55cm,
-    minimum height=0.72cm,inner sep=2pt},
-  near/.style={draw,thick,dashed,align=center,minimum width=2.8cm,
-    minimum height=0.90cm,inner sep=2pt}
-]
-  \node[fmmstep] (src) at (0,2.2) {sources\\$\{q_j,\y_j\}$};
-  \node[fmmstep] (leafm) at (3.2,2.2) {leaf multipoles\\$S2M$};
-  \node[fmmstep] (coarsem) at (6.4,2.2) {coarser multipoles\\$M2M$};
-  \node[fmmstep] (local) at (6.4,0.65) {target locals\\$M2L$};
-  \node[fmmstep] (leafl) at (3.2,0.65) {leaf locals\\$L2L$};
-  \node[fmmstep] (targ) at (0,0.65) {target values\\$u_i$};
-  \node[near] (near) at (0,-1.05) {near field\\direct or special quadrature};
-
-  \draw[->,very thick,SFdark] (src) -- (leafm);
-  \draw[->,very thick,SFdark] (leafm) -- (coarsem);
-  \draw[->,very thick,green!55!black] (coarsem) -- (local);
-  \draw[->,very thick,CCMorange] (local) -- (leafl);
-  \draw[->,very thick,CCMorange] (leafl) -- node[above] {$L2T$} (targ);
-  \draw[->,thick,black!60,dashed] (src.south west) -- ++(-0.45,0)
-    |- ([xshift=-0.8cm]near.north);
-  \draw[->,thick,black!60,dashed] (near.north) -- node[right] {add} (targ.south);
-\end{tikzpicture}
-\end{center}
-\vspace{-0.6em}
-\begin{center}
-\footnotesize Each solid arrow acts on expansion coefficients associated
-with boxes.  Only the dashed branch evaluates nearby kernel interactions
-directly.
-\end{center}
-\end{frame}
-
-%================================================================
-\begin{frame}{Particle FMM algorithm}
-\small
-\begin{enumerate}
-  \item Build an adaptive hierarchical tree.
-  \item Upward pass: form source expansions on leaves and translate them to parents.
-  \item Interaction pass: translate well-separated source expansions to local
-  expansions at target boxes.
-  \item Downward pass: propagate local expansions to children.
-  \item Evaluation: combine local expansion with direct near-field interactions.
-\end{enumerate}
-
-\begin{block}{Complexity}
-For nonoscillatory kernels and bounded particle density, the work is
-$\cO(N)$ up to precision-dependent constants.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Near field and far field}
-\small
-\begin{center}
-\includegraphics[height=0.50\textheight]{fmminteractionlist.pdf}
-\end{center}
-\vspace{-0.7em}
-\begin{center}
-\footnotesize FMM interaction list structure.
-\end{center}
-
-\begin{block}{Rule}
-Near interactions are computed directly or by singular quadrature. Far
-interactions are compressed.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{FMM in a BIE code}
-\small
-For a GMRES iteration:
-\[
-  \bm y=A_N\bm x.
-\]
-Split
-\[
-  A_N=\alpha I+A_{\rm near}+A_{\rm far}.
-\]
-
-\begin{itemize}
-  \item $\alpha I$: local identity term, including the jump coefficient.
-  \item $A_{\rm near}$: sparse-ish list of singular/near panels with special
-  quadrature corrections.
-  \item $A_{\rm far}$: smooth interactions evaluated by FMM.
-\end{itemize}
-\end{frame}
-
-%================================================================
-\begin{frame}{Complete fast BIE solver architecture}
-\small
-FMM accelerates kernel sums, but a complete fast BIE code must also handle:
-\begin{itemize}
-  \item geometry refinement and panel bookkeeping;
-  \item self and near-panel quadrature;
-  \item close target evaluation;
-  \item vector/tensor kernels and multiple densities;
-  \item iterative solver stopping criteria;
-  \item preconditioning or direct solvers when GMRES is slow.
-\end{itemize}
-\end{frame}
-
-%================================================================
-\begin{frame}{DMK kernel splitting}
-\small
-DMK means dual-space multilevel kernel splitting.
-Instead of compressing the original kernel only by separation, write
-\[
-  K(r)=K_0(r)+\sum_{\ell=0}^{L-1}\Delta_\ell(r)+K_L(r),
-\]
-where each level kernel is smooth/local at its scale.
-
-\begin{block}{Comparison}
-\begin{itemize}
-  \item FMM: separation-based low rank of the original kernel.
-  \item DMK: multilevel kernel splitting, with local colleague interactions.
-\end{itemize}
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{FMM versus DMK organization}
-\small
-\begin{columns}[T,totalwidth=\textwidth]
-\begin{column}{0.48\textwidth}
-\textbf{FMM}
-\begin{itemize}
-  \item near/far interaction lists;
-  \item multipole/local translations;
-  \item adaptive tree;
-  \item kernel expansions or equivalent sources.
-\end{itemize}
-\end{column}
-\begin{column}{0.48\textwidth}
-\textbf{DMK}
-\begin{itemize}
-  \item multilevel kernel splitting;
-  \item local colleague interactions;
-  \item real-space plus Fourier/dual-space structure;
-  \item adaptive linear complexity.
-\end{itemize}
-\end{column}
-\end{columns}
-
-\begin{block}{Comparison criterion}
-FMM and DMK use different organizations of the same mechanism: separate
-interactions by scale and exploit smoothness or low rank away from the
-singularity.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Periodic sums, Ewald, and NUFFT}
-\small
-Periodic Green's functions and lattice sums introduce a different structure:
-\[
-\sum_{\bm n\in\mathbb{Z}^d}
-K(\x-\y+\bm n L).
-\]
-Ewald methods split the kernel into
-\[
-K=K_{\rm real}+K_{\rm Fourier},
-\]
-with rapid convergence in both parts.
-
-\begin{block}{NUFFT role}
-The Fourier part often reduces to evaluating nonuniform trigonometric sums;
-this is where NUFFT technology enters.
-\end{block}
-\end{frame}
-
-%================================================================
-\begin{frame}{Comparison of fast algorithm structures}
-\small
-\begin{center}
-\renewcommand{\arraystretch}{1.18}
-\begin{tabular}{lll}
-\toprule
-Method & Structure exploited & Typical role \\
-\midrule
-FMM & separated low-rank kernel blocks & free-space matvec \\
-NUFFT & Fourier sums at nonuniform points & spectral/Fourier part \\
-Ewald & real/Fourier kernel split & periodic sums \\
-DMK & scale-local kernel splitting & multilevel kernel sums \\
-Fast direct & low-rank off-diagonal matrix blocks & many RHS/preconditioner \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\begin{block}{Survey-level distinction}
-All exploit structure, but the structure is not the same. Confusing these
-methods hides the modeling and implementation choices that matter later.
-\end{block}
-\end{frame}
-
-%================================================================
-\fi
-
 %================================================================
 \begin{frame}{Two viewpoints for fast algorithms}
 \small
@@ -2541,7 +1845,7 @@ methods hides the modeling and implementation choices that matter later.
 \begin{itemize}\itemsep2pt
   \item Use an exact algebraic identity or matrix factorization.
   \item Examples: FFT and structured matrix factorizations.
-  \item The approximation error is only roundoff, once the identity is fixed.
+  \item When the identity is applied exactly, its numerical error is roundoff.
 \end{itemize}
 \end{column}
 \begin{column}{0.48\textwidth}
@@ -2600,7 +1904,7 @@ The corresponding block matvec is
   \qquad \text{cost }\cO\bigl(p(m+n)\bigr)\text{ instead of }\cO(mn).
 \]
 \begin{center}
-\includegraphics[width=0.80\textwidth]{well_separation_far.png}
+\includegraphics[width=0.75\textwidth]{well_separation_far.png}
 \end{center}
 \end{frame}
 
@@ -2609,22 +1913,21 @@ The corresponding block matvec is
 \footnotesize
 For the 3D Laplace kernel, the DMK construction uses a hierarchy of scales:
 \[
-  \frac1r=W_0(r)+\sum_{\ell=0}^{L-1}D_\ell(r)+R_L(r),
-  \qquad
-  D_\ell(r)=\frac{\erf(r/\sigma_{\ell+1})-\erf(r/\sigma_\ell)}{r}.
+  \frac1r\approx W_0(r)+\sum_{\ell=0}^{L-1}D_\ell(r)+R_L(r),
 \]
-Each difference kernel has a short separated plane-wave representation:
 \[
-  D_\ell(\x-\y)\approx
-  \sum_{\bm{m}\in\mathcal M}w_{\ell,\bm{m}}
-  e^{\ii h_\ell\bm{m}\cdot\x}
-  e^{-\ii h_\ell\bm{m}\cdot\y},
-  \qquad |\mathcal M|=p(\eps).
+  W_0(r)\approx\frac{\erf(r/\sigma_0)}{r},\qquad
+  D_\ell(r)=\frac{\erf(r/\sigma_{\ell+1})-\erf(r/\sigma_\ell)}{r},
+  \qquad
+  R_L(r)=\frac{\erfc(r/\sigma_L)}{r},
 \]
+with $\sigma_0>\sigma_1>\cdots>\sigma_L$.
 \begin{itemize}
-  \item $D_\ell$ is localized in physical space and smooth, rapidly decaying
-  in Fourier space.
-  \item The short mode set gives the compression at level $\ell$; $R_L$ is local.
+  \item $D_\ell$ is smooth and negligible beyond colleague boxes at level
+  $\ell$ to the requested precision.
+  \item A localized Fourier convolution represents its interaction on that
+  level with a precision-dependent number of modes; $R_L$ is the local
+  residual correction.
   \item The compression comes from the kernel split, not from separation of the
   original kernel block.
 \end{itemize}
@@ -2646,8 +1949,8 @@ where $A$ is a node of $T_X$ at level $\ell$ and $B$ is a node of
 $T_\Omega$ at level $L-\ell$.
 
 \begin{itemize}
-  \item The rank stays bounded for complementary source--target boxes, not
-  for arbitrary blocks at one fixed level.
+  \item The source- and target-box widths have a constant product at these
+  complementary levels; this is the condition that keeps the rank bounded.
   \item The two trees must therefore be traversed simultaneously; this gives
   the sparse product of factors in a butterfly factorization.
 \end{itemize}
@@ -2686,20 +1989,21 @@ rank-$p(\eps)$ equivalent-source representation:
 %================================================================
 \begin{frame}{Thread II: proxy sources and check potentials}
 \small
-Let $Y$ be a source cluster, $X_{\rm chk}$ a set of check targets, and
-$Y_{\rm prx}$ a set of proxy sources.  Compression can be expressed as
+Let $Y$ be a source cluster, $X_{\rm chk}$ a small set of check targets, and
+$Y_{\rm prx}$ a small set of proxy sources.  Match the potential of $Y$ at
+$X_{\rm chk}$ by choosing proxy strengths $\widetilde q$:
 \[
   K(X_{\rm chk},Y)q
   \approx K(X_{\rm chk},Y_{\rm prx})\widetilde q,
 \]
-where $\widetilde q$ is chosen from the check potentials.  The same proxy
-sources then represent the field at the far targets:
+For the prescribed far region, the proxy sources then approximate the field:
 \[
   K(X_{\rm far},Y)q
   \approx K(X_{\rm far},Y_{\rm prx})\widetilde q.
 \]
 \begin{itemize}
-  \item $X_{\rm chk}$ and $Y_{\rm prx}$ contain only a small number of points.
+  \item The proxy and check sets are chosen for the cluster geometry and the
+  far region being represented.
   \item Analytic expansions can replace this numerical proxy construction;
   proxy/check representations are the corresponding data-sparse mechanism.
 \end{itemize}
@@ -2716,8 +2020,9 @@ The purpose of proxy or check points is to make the compression stage cheap:
   \qquad p\ll N.
 \]
 \begin{itemize}
-  \item If $p$ grows with the cluster size, forming and applying the compressed
-  representation can lose the fast-algorithm advantage.
+  \item If $p$ grows with the number of source or target points in a cluster,
+  forming and applying the compressed representation can lose the
+  fast-algorithm advantage.
   \item Analytic low-rank expansions avoid sampling the full interaction and
   can be preferable when the kernel structure is known explicitly.
   \item The same idea appears as equivalent sources/check potentials in
@@ -2754,17 +2059,17 @@ untouched.  Fast algorithms apply it recursively on a hierarchy:
 \toprule
 Method & What is compressed & What is traversed recursively \\
 \midrule
-FMM & well-separated blocks & one spatial box tree \\
-DMK & difference kernels, local in physical and Fourier space & spatial levels and dual-space representations \\
-Butterfly & complementary low-rank blocks & source and target trees in opposite directions \\
-Directional FMM & directional wedge interactions & spatial levels together with directions \\
+FMM & well-separated blocks & spatial box tree \\
+DMK & scale-local difference kernels & spatial levels and Fourier representation \\
+Butterfly & complementary low-rank blocks & paired source and target trees \\
+Directional FMM & directional wedge interactions & spatial tree and directions \\
 \bottomrule
 \end{tabular}
 \end{center}
 \vspace{2mm}
 \begin{block}{The common architecture}
-Low rank supplies the compression; proxy/check or analytic representations make
-it efficient; recursion applies it across the hierarchy.
+Low rank supplies the compression; compact coefficient representations make it
+efficient; recursion applies it across the hierarchy.
 \end{block}
 \end{frame}
 
@@ -2830,7 +2135,7 @@ this is where NUFFT technology enters.
 %================================================================
 \begin{frame}{Fast direct solvers: motivation}
 \small
-Fast matvec plus GMRES is excellent when:
+Fast matvec plus GMRES is a natural choice when:
 \begin{itemize}
   \item the BIE is well-conditioned;
   \item the number of right-hand sides is small;
@@ -2896,26 +2201,6 @@ skeletons.
 \end{frame}
 
 %================================================================
-\begin{frame}{Direct solver cost model}
-\small
-The exact constants and exponents depend on dimension, kernel, geometry, and
-rank growth. A useful rough picture is:
-\[
-\begin{array}{lll}
-\text{dense LU} & \cO(N^3) \text{ build} & \cO(N^2)\text{ apply},\\
-\text{fast direct} & \cO(N\log^a N)\text{ or } \cO(N^{3/2}) \text{ build} &
-\cO(N\log^b N)\text{ apply},\\
-\text{FMM+GMRES} & m\,\cO(N) & \text{no reusable inverse}.
-\end{array}
-\]
-
-\begin{block}{Method selection}
-The appropriate method depends on the number of right-hand sides and the
-iteration count.
-\end{block}
-\end{frame}
-
-%================================================================
 \begin{frame}{Many right-hand sides}
 \small
 Suppose one solve costs
@@ -2937,8 +2222,8 @@ r\,m\,T_{\rm mv}.
 \]
 \end{block}
 
-This is common in scattering sweeps, inverse problems, and repeated geometry
-queries.
+This comparison is relevant when the same discretized operator is reused for
+multiple right-hand sides.
 \end{frame}
 
 %================================================================
@@ -3053,8 +2338,8 @@ $B\in\mathbb{R}^{K\times N}$, count $2MNK$ FLOPs.
         because one double-precision value occupies 64 bits.
 \end{itemize}
 
-For one core of an Intel Xeon processor based on the Skylake microarchitecture,
-the peak-rate estimate is
+For the Intel Skylake server-core model used in the source benchmark, the
+peak-rate estimate is
 \[
   \begin{aligned}
   &(2\ \text{FMA units})
@@ -3073,6 +2358,8 @@ the peak-rate estimate is
 Peak FLOP/s is computed from hardware capabilities; achieved FLOP/s is
 computed from a timed implementation.
 \end{block}
+\vspace{-0.45em}
+\tiny Source: D. Malhotra (2022); hardware model and assumptions shown above.
 \end{frame}
 
 %================================================================
@@ -3192,7 +2479,7 @@ for (int k = 0; k < K; ++k) {
   const Vec A_vec = Vec::Load(A+k*M);
   #pragma GCC unroll (8)
   for (int j = 0; j < N; ++j)
-    C_vec[j] = A_vec * B[j*K] + C_vec[j];
+    C_vec[j] = A_vec * B[k+K*j] + C_vec[j];
 }
 \end{verbatim}
 \end{block}
@@ -3218,6 +2505,9 @@ vectorized + unrolled & 38.5658 & 36.5\%\\
 The operation count is unchanged, while the measured throughput changes by
 more than a factor of six.
 \end{block}
+\scriptsize
+Source: D. Malhotra, \textit{What Every Programmer Should Know About High
+Performance Computing} (2022).
 \end{columns}
 \end{frame}
 
@@ -3532,35 +2822,6 @@ must be combined.
 \end{frame}
 
 %================================================================
-\begin{frame}{Benchmarking the two Estrin source forms}
-\small
-\begin{block}{What is measured}
-The source program measures cycles per iteration for the complete compiled
-scalar loop.  The compiler and processor determine the instruction schedule;
-two algebraically equivalent source forms need not have the same measured
-time.
-\end{block}
-\begin{center}
-\begin{tabular}{lcc}
-\toprule
-Implementation & cycles/iteration & speedup\\
-\midrule
-Horner & 29.1203 & 1.0\\
-Estrin & 19.0783 & 1.5\\
-Expanded Estrin & 15.1120 & 1.9\\
-\bottomrule
-\end{tabular}
-\end{center}
-Here, \(\text{speedup}=29.1203/(\text{cycles per iteration})\).  The expanded
-form names the independent quantities explicitly; this scalar benchmark is
-closer to, but still not identical with, the ideal factor-two latency result.
-\par\smallskip
-\scriptsize
-Source: D. Malhotra, \textit{What Every Programmer Should Know About High
-Performance Computing} (2022), \texttt{poly-eval.cpp}.
-\end{frame}
-
-%================================================================
 \begin{frame}{From arithmetic to memory movement}
 \small
 \begin{itemize}
@@ -3624,11 +2885,12 @@ FLAM illustrates fast direct solver methods.
 \begin{frame}{One complete model workflow}
 \small
 \begin{enumerate}
-  \item State the BVP and its function spaces.
+  \item State the BVP and its boundary data.
   \item Choose a Green's function satisfying the PDE and far-field condition.
   \item Choose a layer potential representation.
-  \item Use jump relations to derive a BIE.
-  \item Verify uniqueness and second-kind structure.
+  \item Take the appropriate boundary limits, including jump terms when
+  present, to obtain a BIE.
+  \item Verify uniqueness and conditioning.
   \item Discretize geometry and density.
   \item Use singular and near-singular quadrature.
   \item Solve the dense system with GMRES+FMM/DMK or a fast direct solver.
@@ -3643,39 +2905,23 @@ FLAM illustrates fast direct solver methods.
   \item Green's functions solve the PDE analytically away from sources.
   \item Layer potentials move unknowns to the boundary.
   \item Jump relations turn boundary conditions into integral equations.
-  \item Sobolev spaces explain the correct trace and flux data spaces.
   \item Singular quadrature is part of the method, not an implementation detail.
-  \item FMM/DMK/fast direct solvers make dense BIE systems scalable.
+  \item FMM, DMK, and fast direct solvers can reduce the cost of dense BIE
+  computations when their structural assumptions apply.
   \item HPC constraints determine whether the asymptotic speedup is realized.
 \end{itemize}
 \end{frame}
 
 %================================================================
-\begin{frame}{Core references}
-\small
+\begin{frame}{Selected references}
+\footnotesize
 \begin{itemize}
   \item R. Kress, \emph{Linear Integral Equations}, 3rd ed., Springer, 2014.
-  \item W. McLean, \emph{Strongly Elliptic Systems and Boundary Integral Equations}, Cambridge University Press, 2000.
-  \item S. Sauter and C. Schwab, \emph{Boundary Element Methods}, Springer, 2011.
   \item D. Colton and R. Kress, \emph{Integral Equation Methods in Scattering Theory}, Wiley, 1983.
-  \item L. Greengard and V. Rokhlin, ``A fast algorithm for particle simulations,'' \emph{JCP}, 1987.
-  \item H. Cheng, L. Greengard, and V. Rokhlin, ``A fast adaptive multipole algorithm in three dimensions,'' \emph{JCP}, 1999.
+  \item L. Greengard and V. Rokhlin, ``A fast algorithm for particle simulations,'' \emph{Journal of Computational Physics} 73 (1987), 325--348.
+  \item S. Jiang and L. Greengard, ``A dual-space multilevel kernel-splitting framework for discrete and continuous convolution,'' \emph{Communications on Pure and Applied Mathematics} 78 (2025), 1086--1143.
   \item P.-G. Martinsson, \emph{Fast Direct Solvers for Elliptic PDEs}, SIAM, 2019.
-\end{itemize}
-\end{frame}
-
-%================================================================
-\begin{frame}{Additional references}
-\scriptsize
-\begin{itemize}
-  \item B. K. Alpert, ``Hybrid Gauss-trapezoidal quadrature rules,'' \emph{SIAM Journal on Scientific Computing}, 1999.
-  \item J. Helsing and R. Ojala, ``On the evaluation of layer potentials close to their sources,'' \emph{Journal of Computational Physics}, 2008.
-  \item L. Ying, G. Biros, and D. Zorin, ``A kernel-independent adaptive fast multipole method in two and three dimensions,'' \emph{J. Comput. Phys.} 196, 2004.
-  \item E. Candes, L. Demanet, and L. Ying, ``Fast computation of Fourier integral operators,'' \emph{SIAM J. Sci. Comput.} 29, 2007.
-  \item B. Engquist and L. Ying, ``Fast directional multilevel algorithms for oscillatory kernels,'' \emph{SIAM J. Sci. Comput.} 29, 2007.
-  \item Y. Li, H. Yang, E. R. Martin, K. L. Ho, and L. Ying, ``Butterfly factorization,'' \emph{SIAM Multiscale Model. Simul.} 13, 2015.
-  \item L. N. Trefethen and D. Bau, \emph{Numerical Linear Algebra}, SIAM, 1997.
-  \item J. L. Hennessy and D. A. Patterson, \emph{Computer Architecture: A Quantitative Approach}, Morgan Kaufmann.
+  \item D. Malhotra, \emph{What Every Programmer Should Know About High Performance Computing}, course slides, 2022.
 \end{itemize}
 \end{frame}
 
